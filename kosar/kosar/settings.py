@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'account',
 
 ]
 
@@ -125,3 +126,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # redirect to the home page after a successful login
 LOGIN_REDIRECT_URL = 'home'
+AUTH_USER_MODEL = 'account.CustomUser'
