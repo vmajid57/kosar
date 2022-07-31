@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
+from django.contrib.auth.models import User
 
 
 # Create your models here.
@@ -18,3 +19,11 @@ class Loan(models.Model):
     created_at = models.DateTimeField(default=None)
     end_at = models.DateTimeField(default=None)
     numberOf = models.IntegerField(default=30)
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    bio = models.TextField()
+
+    def __str__(self):
+        return self.user.username
