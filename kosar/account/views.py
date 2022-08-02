@@ -1,28 +1,52 @@
+from django.contrib.auth.views import LoginView
 from django.shortcuts import render, redirect
-from django.contrib.auth import login, authenticate
 from django.contrib import messages
-from .forms import UserRegistrationForm
-from django.contrib.auth.decorators import login_required
+from django.views import View
+
+from .forms import RegisterForm, LoginForm
 
 
 def home(request):
     return render(request, 'account/home.html')
 
 
-@login_required
-def profile(request):
-    return render(request, 'account/profile.html')
+class RegisterView(View):
+    form_class = RegisterForm
+    initial = {'key': 'value'} # TODO: what is initial???
+    template_name = 'account/register.html'
 
+    # TODO: read about dispatch function
+    def dispatch(self, request, *args, **kwargs):
+        # will redirect to the home page if a user tries to access the register page while logged in
+        if request.user.is_authenticated:
+            return redirect(to='/')
 
-def register(request):
-    if request.method == 'POST':
-        form = UserRegistrationForm(request.POST)
+        # else process dispatch as it otherwise normally would
+        return super(RegisterView, self).dispatch(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        form = self.form_class(initial=self.initial)
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
+
         if form.is_valid():
             form.save()
 
-            return redirect('login')
-    else:
-        form = UserRegistrationForm()
+            username = form.cleaned_data.get('username')
+            messages.success(request, f'Account created for {username}')
 
-    context = {'form': form}
-    return render(request, 'account/register.html', context)
+            return redirect(to='/')
+
+        return render(request, self.template_name, {'form': form})
+
+
+# TODO: add remember me
+class CustomLoginView(LoginView):
+    form_class = LoginForm
+
+    def form_valid(self, form):
+        # else browser session will be as long as the session cookie time "SESSION_COOKIE_AGE" defined in settings.py
+        print("\n *****", self.form_class.username, " *****\n")
+        return super(CustomLoginView, self).form_valid(form)
