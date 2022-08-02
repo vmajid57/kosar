@@ -1,14 +1,19 @@
-<!--redirect to the home page after a successful login-->
+{% extends "account/base.html" %}
+{% block title %} Home Page {% endblock title%}
+{% block content %}
+    <div class="jumbotron">
+        <h1 class="display-4">Welcome</h1>
+        {% if user.is_authenticated %}
+            <div>
+                {{ fields.username }}
+            </div>
+        {% else %}
+            <p class="lead">
+            This is <b>user registration and login system</b> build with django which is
+            a Python-based free and open-source web framework that follows the model–template–views architectural pattern.
+            </p>
+        {% endif %}
 
-{% if user.is_authenticated %}
-    <div class="alert alert-success" role="alert">
-        <h3>Welcome {{ user.username }}!</h3>
-        <a href="{% url 'logout' %}">Logout?</a>
     </div>
-{% else %}
-    <div class="alert alert-success" role="alert">
-        <h3>Welcome!</h3>
-        <a href="{% url 'register' %}">Signup</a>
-        <a href="{% url 'login' %}">Login</a>
-    </div>
-{% endif %}
+
+{% endblock content %}
