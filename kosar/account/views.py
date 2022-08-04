@@ -1,13 +1,20 @@
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.views import View
+
 
 from .forms import RegisterForm, LoginForm
 
 
 def home(request):
     return render(request, 'account/home.html')
+
+
+@login_required
+def profile(request):
+    return render(request, 'account/profile.html')
 
 
 class RegisterView(View):
@@ -36,7 +43,6 @@ class RegisterView(View):
 
             username = form.cleaned_data.get('username')
             messages.success(request, f'Account created for {username}')
-
             return redirect(to='/')
 
         return render(request, self.template_name, {'form': form})
@@ -45,8 +51,13 @@ class RegisterView(View):
 # TODO: add remember me
 class CustomLoginView(LoginView):
     form_class = LoginForm
+    template_name = 'account/home.html'
+    # TODO: why cant wtite template_name here and use self.template_name in render?
 
     def form_valid(self, form):
-        # else browser session will be as long as the session cookie time "SESSION_COOKIE_AGE" defined in settings.py
-        print("\n *****", self.form_class.username, " *****\n")
+        username = form.cleaned_data.get('username')
+        context = {'username': username}
+        print("\n****", context, "********\n")
+        # return redirect(to='/')
+        # return render(self.request, 'account/profile.html', {'context': context})
         return super(CustomLoginView, self).form_valid(form)
