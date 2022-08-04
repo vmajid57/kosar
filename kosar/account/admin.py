@@ -4,5 +4,3 @@ from .models import Profile
 admin.site.register(Profile)
 
 
-def ready(self):
-    import users.signals
